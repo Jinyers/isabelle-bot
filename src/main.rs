@@ -1,35 +1,12 @@
 use std::env;
-use tracing::{
-    info,
-    error,
-};
+use tracing::error;
 use tracing_subscriber;
 
-use serenity::{
-    async_trait,
-    model::{channel::Message, gateway::Ready, event::ResumedEvent},
-    prelude::*
-};
+use serenity::prelude::*;
 
-struct Handler;
-
-#[async_trait]
-impl EventHandler for Handler {
-    async fn message(&self, ctx: Context, msg: Message) {
-        println!("New message");
-        if msg.content == "!ping" {
-            if let Err(why) = msg.channel_id.say(&ctx.http, "Pong!").await {
-                error!("Error sending message: {why:?}");
-            }
-        }
-    }
-    async fn ready(&self, _: Context, ready: Ready) {
-        info!("Connected as {}", ready.user.name);
-    }
-    async fn resume(&self, _:Context, _: ResumedEvent) {
-        info!("Resumed")
-    }
-}
+struct Data {}
+type Error = Box<dyn std::error::Error + Send + Sync>;
+type Context<'a> = poise::Context<'a, Data, Error>;
 
 #[tokio::main]
 async fn main() {
@@ -40,9 +17,22 @@ async fn main() {
         | GatewayIntents::DIRECT_MESSAGES
         | GatewayIntents::MESSAGE_CONTENT;
 
+    let framework = poise::Framework::builder()
+        .options(poise::FrameworkOptions {
+            ..Default::default()
+        })
+    .setup(|ctx, _ready, framework| {
+        Box::pin(async move {
+            poise::builtins::register_globally(ctx, &framework.options().commands).await?;
+            Ok(Data {})
+        })
+    })
+    .build();
+
     let mut client =
         Client::builder(&token, intents)
-            .event_handler(Handler).await
+            .framework(framework)
+            .await
             .expect("Err creating client");
     if let Err(why) = client.start().await {
         error!("Client error: {why:?}");
