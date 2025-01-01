@@ -1,8 +1,10 @@
 use std::env;
 
-use serenity::async_trait;
-use serenity::model::channel::Message;
-use serenity::prelude::*;
+use serenity::{
+    async_trait,
+    model::{channel::Message, gateway::Ready},
+    prelude::*
+};
 
 struct Handler;
 
@@ -15,6 +17,9 @@ impl EventHandler for Handler {
                 println!("Error sending message: {why:?}");
             }
         }
+    }
+    async fn ready(&self, ctx: Context, ready: Ready) {
+        println!("Connected")
     }
 }
 
