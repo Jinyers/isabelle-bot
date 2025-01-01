@@ -3,6 +3,7 @@ use tracing::{
     info,
     error,
 };
+use tracing_subscriber;
 
 use serenity::{
     async_trait,
@@ -32,6 +33,7 @@ impl EventHandler for Handler {
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
     let token = env::var("DISCORD_TOKEN").expect("Expected a token");
 
     let intents = GatewayIntents::GUILD_MESSAGES
