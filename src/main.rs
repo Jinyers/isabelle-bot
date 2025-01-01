@@ -1,3 +1,5 @@
+mod commands;
+
 use std::env;
 use tracing::error;
 use tracing_subscriber;
@@ -19,6 +21,7 @@ async fn main() {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
+            commands: vec![commands::ping::ping()],
             ..Default::default()
         })
     .setup(|ctx, _ready, framework| {
