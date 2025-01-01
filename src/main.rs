@@ -1,8 +1,12 @@
 use std::env;
+use tracing::{
+    info,
+    error,
+};
 
 use serenity::{
     async_trait,
-    model::{channel::Message, gateway::Ready},
+    model::{channel::Message, gateway::Ready, event::ResumedEvent},
     prelude::*
 };
 
@@ -14,12 +18,15 @@ impl EventHandler for Handler {
         println!("New message");
         if msg.content == "!ping" {
             if let Err(why) = msg.channel_id.say(&ctx.http, "Pong!").await {
-                println!("Error sending message: {why:?}");
+                error!("Error sending message: {why:?}");
             }
         }
     }
-    async fn ready(&self, ctx: Context, ready: Ready) {
-        println!("Connected")
+    async fn ready(&self, _: Context, ready: Ready) {
+        info!("Connected as {}", ready.user.name);
+    }
+    async fn resume(&self, _:Context, _: ResumedEvent) {
+        info!("Resumed")
     }
 }
 
@@ -36,7 +43,7 @@ async fn main() {
             .event_handler(Handler).await
             .expect("Err creating client");
     if let Err(why) = client.start().await {
-        println!("Client error: {why:?}");
+        error!("Client error: {why:?}");
     }
 
 }
