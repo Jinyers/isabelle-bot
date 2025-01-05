@@ -15,7 +15,6 @@
       nativeBuildInputs = with pkgs; [
 				rustup
 			];
-      shellHook = "exec zsh";
 		};
 	};
 }
