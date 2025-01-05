@@ -14,6 +14,10 @@ type Context<'a> = poise::Context<'a, Data, Error>;
 async fn main() {
     tracing_subscriber::fmt::init();
     let token = env::var("DISCORD_TOKEN").expect("Expected a token");
+    let commands = vec![
+        commands::ping::ping(),
+        commands::profile::profile()
+    ];
 
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
@@ -21,7 +25,7 @@ async fn main() {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: vec![commands::ping::ping()],
+            commands,
             ..Default::default()
         })
     .setup(|ctx, _ready, framework| {
