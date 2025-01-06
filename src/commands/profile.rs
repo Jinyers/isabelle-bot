@@ -23,6 +23,13 @@ pub async fn profile(
     }
     Ok(())
 }
+
+#[command(context_menu_command = "Lookup profile", ephemeral)]
+pub async fn profile_context_menu(
+    ctx: Context<'_>,
+    user: serenity::User
+    ) -> Result<(), Error> {
+    let result = ctx.send(create_embeded_profile(&user)).await;
     if let Err(why) = result {
         error!("Cannot respond {} because {}", user.name, why);
     }

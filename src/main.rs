@@ -16,7 +16,8 @@ async fn main() {
     let token = env::var("DISCORD_TOKEN").expect("Expected a token");
     let commands = vec![
         commands::ping::ping(),
-        commands::profile::profile()
+        commands::profile::profile(),
+        commands::profile::profile_context_menu(),
     ];
 
     let intents = GatewayIntents::GUILD_MESSAGES
